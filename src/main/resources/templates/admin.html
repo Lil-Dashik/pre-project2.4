@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello admin</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<h2>Admin page</h2>
+<div>
+    <p>Hello Admin, this your page!</p>
+</div>
+<form th:action="@{/admin}" method="get">
+    <input type="hidden" name="id" th:value="${user.id}">
+    Name:<input type="text" name="name" th:value="${user.username}" readonly/> <br>
+    Password:<input type="text" name="password" th:value="${user.password}" readonly/><br>
+</form>
+<a href="users">ALL USERS</a>
+
+<a href="/logout">Logout</a>
+</body>
+</html></html>

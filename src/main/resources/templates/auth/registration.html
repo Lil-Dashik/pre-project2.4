@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<h2>Sign Up</h2>
+<form action="/auth/registration" method="POST" th:object="${user}">
+    Name: <input type="text" th:field="*{username}" id="username"/>
+    <div style="color: darkorange" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"> Error</div>
+    <br>
+    Password: <input type="text" th:field="*{password}" id="password"/>
+    <div style="color: darkorange" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> Error</div>
+    <br>
+    <input type="submit" value="Sign Up">
+</form>
+</body>
+</head>
+
+</html>
