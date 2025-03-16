@@ -6,15 +6,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pre_project24.SpringSecurity.models.User;
 import pre_project24.SpringSecurity.security.UsersDetailsImp;
 import pre_project24.SpringSecurity.servises.UserDetailsServiceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("")
@@ -52,16 +49,5 @@ public class UserController {
         return "admin";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/user/{id}")
-    public String getUserById(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<User> userOptional = userService.findById(id);
 
-        if (userOptional.isEmpty()) {
-            redirectAttributes.addFlashAttribute("error", "User with ID " + id + " not found!");
-            return "redirect:/users";
-        }
-        model.addAttribute("user", userOptional.get());
-        return "user";
-    }
 }

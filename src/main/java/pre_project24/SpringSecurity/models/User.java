@@ -20,7 +20,7 @@ public class User {
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
     @Column(unique = true)
-    private String username; // уникальное значение
+    private String username;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 3000, message = "Password should be between 2 and 30 characters")
     private String password;

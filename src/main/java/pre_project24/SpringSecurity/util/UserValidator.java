@@ -1,5 +1,6 @@
 package pre_project24.SpringSecurity.util;
 
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -17,7 +18,7 @@ public class UserValidator implements Validator {
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void validate(@NonNull Object target, @NonNull Errors errors) {
         User user = (User) target;
         if (userService.isUserExists(user.getUsername())) {
             errors.rejectValue("username", "Duplicate.userForm.username", "Username already exists");
@@ -25,7 +26,7 @@ public class UserValidator implements Validator {
     }
 
     @Override
-    public boolean supports(Class<?> clazz) {
+    public boolean supports(@NonNull Class<?> clazz) {
         return User.class.equals(clazz);
     }
 }
