@@ -45,19 +45,11 @@ public class UserController {
         return "user";
     }
 
-    @GetMapping(value = "/admin")
-    public String getAdminPage(Model model, @AuthenticationPrincipal UsersDetailsImp userDetails) {
-        if (userDetails != null) {
-            model.addAttribute("user", userDetails.getUser());
-        }
-        return "admin";
-    }
-
     @GetMapping("/users")
     public String getUsersList(Model model) {
         List<User> users = userService.getAllUsers();
         model.addAttribute("users", users);
-        return "users";
+        return "admin";
     }
 
     @PreAuthorize("hasRole('ADMIN')")

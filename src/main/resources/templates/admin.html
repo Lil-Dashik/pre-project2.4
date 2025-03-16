@@ -2,21 +2,53 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Hello admin</title>
+    <title>Admin Panel</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<h2>Admin page</h2>
-<div>
-    <p>Hello Admin, this your page!</p>
+<div th:if="${error}">
+    <p th:text="${error}"></p>
 </div>
-<form th:action="@{/admin}" method="get">
-    <input type="hidden" name="id" th:value="${user.id}">
-    Name:<input type="text" name="name" th:value="${user.username}" readonly/> <br>
-    Password:<input type="text" name="password" th:value="${user.password}" readonly/><br>
-</form>
-<a href="users">ALL USERS</a>
+<div class="container mt-4">
+    <h2>Admin Panel</h2>
 
-<a href="/logout">Logout</a>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Roles</th>
+            <th>Action</th>
+            <th>Page</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.roles}"></td>
+            <td>
+                <form method="post" th:action="@{/admin/updateRoles}">
+                    <input type="hidden" name="userId" th:value="${user.id}"/>
+
+                    <label>Select Roles:</label>
+                    <select name="roleIds"  multiple class="form-control">
+                        <option th:each="role : ${roles}"
+                                th:value="${role.id}"
+                                th:text="${role.role}"
+                                th:selected="${user.roles.contains(role)}">
+                        </option>
+                    </select>
+
+                    <button type="submit" >Update Roles</button>
+                </form>
+            </td>
+            <td>
+                <a th:href="@{'/user/' + ${user.id}}">User page</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
-</html></html>
+</html>
