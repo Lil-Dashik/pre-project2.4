@@ -1,4 +1,4 @@
-package pre_project24.SpringSecurity.servises;
+package pre_project24.SpringSecurity.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,16 +7,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pre_project24.SpringSecurity.models.Role;
-import pre_project24.SpringSecurity.models.User;
-import pre_project24.SpringSecurity.repositories.RoleRepository;
-import pre_project24.SpringSecurity.repositories.UserRepository;
+import pre_project24.SpringSecurity.model.Role;
+import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.repository.RoleRepository;
+import pre_project24.SpringSecurity.repository.UserRepository;
 import pre_project24.SpringSecurity.security.UsersDetailsImp;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static pre_project24.SpringSecurity.model.RoleName.ROLE_USER;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -55,20 +57,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            Set<Role> roles = new HashSet<>();
-            if (roleIds != null) {
-                roles.addAll(roleRepository.findAllById(roleIds));
+            if (roleIds == null || roleIds.isEmpty()) {
+                Role defaultRole = roleRepository.findByRole(ROLE_USER).get();
+                user.setRoles(Set.of(defaultRole));
+            } else {
+                Set<Role> updateRoles = new HashSet<>(roleRepository.findAllById(roleIds));
+                if (updateRoles.isEmpty()) {
+                    Role defaultRole = roleRepository.findByRole(ROLE_USER).get();
+                    updateRoles.add(defaultRole);
+                }
+                user.setRoles(updateRoles);
             }
-            user.setRoles(roles);
-            userRepository.save(user);
-        }
-    }
-
-    public void removeUserRoles(Long userId, List<Long> roleIds) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent() && roleIds != null) {
-            User user = userOptional.get();
-            user.getRoles().removeIf(role -> roleIds.contains(role.getId()));
             userRepository.save(user);
         }
     }

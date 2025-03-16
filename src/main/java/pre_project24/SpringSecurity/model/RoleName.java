@@ -1,4 +1,4 @@
-package pre_project24.SpringSecurity.models;
+package pre_project24.SpringSecurity.model;
 
 public enum RoleName {
     ROLE_USER,

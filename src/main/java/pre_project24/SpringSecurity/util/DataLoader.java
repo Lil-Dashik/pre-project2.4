@@ -3,9 +3,9 @@ package pre_project24.SpringSecurity.util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import pre_project24.SpringSecurity.models.Role;
-import pre_project24.SpringSecurity.models.RoleName;
-import pre_project24.SpringSecurity.repositories.RoleRepository;
+import pre_project24.SpringSecurity.model.Role;
+import pre_project24.SpringSecurity.model.RoleName;
+import pre_project24.SpringSecurity.repository.RoleRepository;
 
 import java.util.HashSet;
 import java.util.Set;

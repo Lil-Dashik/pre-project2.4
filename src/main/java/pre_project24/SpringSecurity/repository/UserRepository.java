@@ -1,7 +1,7 @@
-package pre_project24.SpringSecurity.repositories;
+package pre_project24.SpringSecurity.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pre_project24.SpringSecurity.models.User;
+import pre_project24.SpringSecurity.model.User;
 
 import java.util.Optional;
 

@@ -1,9 +1,9 @@
-package pre_project24.SpringSecurity.servises;
+package pre_project24.SpringSecurity.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pre_project24.SpringSecurity.models.Role;
-import pre_project24.SpringSecurity.repositories.RoleRepository;
+import pre_project24.SpringSecurity.model.Role;
+import pre_project24.SpringSecurity.repository.RoleRepository;
 
 import java.util.List;
 

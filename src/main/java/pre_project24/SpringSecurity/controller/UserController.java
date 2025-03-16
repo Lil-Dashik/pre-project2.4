@@ -1,15 +1,14 @@
-package pre_project24.SpringSecurity.controllers;
+package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import pre_project24.SpringSecurity.models.User;
+import pre_project24.SpringSecurity.model.User;
 import pre_project24.SpringSecurity.security.UsersDetailsImp;
-import pre_project24.SpringSecurity.servises.UserDetailsServiceImpl;
+import pre_project24.SpringSecurity.service.UserDetailsServiceImpl;
 
 import java.util.List;
 

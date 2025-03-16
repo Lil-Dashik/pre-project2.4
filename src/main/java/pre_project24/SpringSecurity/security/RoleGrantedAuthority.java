@@ -1,7 +1,7 @@
 package pre_project24.SpringSecurity.security;
 
 import org.springframework.security.core.GrantedAuthority;
-import pre_project24.SpringSecurity.models.Role;
+import pre_project24.SpringSecurity.model.Role;
 
 public class RoleGrantedAuthority implements GrantedAuthority {
     private final Role role;

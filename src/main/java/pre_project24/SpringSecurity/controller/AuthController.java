@@ -1,4 +1,4 @@
-package pre_project24.SpringSecurity.controllers;
+package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import pre_project24.SpringSecurity.models.User;
-import pre_project24.SpringSecurity.servises.RegistrationService;
+import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.service.RegistrationService;
 import pre_project24.SpringSecurity.util.UserValidator;
 
 import javax.validation.Valid;

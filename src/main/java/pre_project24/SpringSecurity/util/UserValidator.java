@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import pre_project24.SpringSecurity.models.User;
-import pre_project24.SpringSecurity.servises.UserValidationService;
+import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.service.UserValidationService;
 
 @Component
 public class UserValidator implements Validator {

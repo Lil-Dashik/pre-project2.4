@@ -1,9 +1,8 @@
-package pre_project24.SpringSecurity.servises;
+package pre_project24.SpringSecurity.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pre_project24.SpringSecurity.models.User;
-import pre_project24.SpringSecurity.repositories.UserRepository;
+import pre_project24.SpringSecurity.repository.UserRepository;
 
 @Service
 public class UserValidationService {
@@ -16,12 +15,5 @@ public class UserValidationService {
 
     public boolean isUserExists(String username) {
         return userRepository.findByUsername(username).isPresent();
-    }
-
-    public void registerUser(User user) {
-        if (isUserExists(user.getUsername())) {
-            throw new IllegalArgumentException("User with this name already exists!");
-        }
-        userRepository.save(user);
     }
 }

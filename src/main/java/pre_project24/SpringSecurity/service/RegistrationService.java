@@ -1,14 +1,14 @@
-package pre_project24.SpringSecurity.servises;
+package pre_project24.SpringSecurity.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pre_project24.SpringSecurity.models.Role;
-import pre_project24.SpringSecurity.models.RoleName;
-import pre_project24.SpringSecurity.models.User;
-import pre_project24.SpringSecurity.repositories.RoleRepository;
-import pre_project24.SpringSecurity.repositories.UserRepository;
+import pre_project24.SpringSecurity.model.Role;
+import pre_project24.SpringSecurity.model.RoleName;
+import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.repository.RoleRepository;
+import pre_project24.SpringSecurity.repository.UserRepository;
 
 import java.util.Set;
 
