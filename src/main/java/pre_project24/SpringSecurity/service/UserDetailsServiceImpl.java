@@ -11,12 +11,8 @@ import pre_project24.SpringSecurity.model.Role;
 import pre_project24.SpringSecurity.model.User;
 import pre_project24.SpringSecurity.repository.RoleRepository;
 import pre_project24.SpringSecurity.repository.UserRepository;
-import pre_project24.SpringSecurity.security.UsersDetailsImp;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static pre_project24.SpringSecurity.model.RoleName.ROLE_USER;
 
@@ -38,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user.isEmpty()) {
             throw new UsernameNotFoundException("User not found");
         }
-        return new UsersDetailsImp(user.get());
+        return new User(user.get());
     }
 
     public Optional<User> findById(Long id) {

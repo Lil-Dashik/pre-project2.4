@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pre_project24.SpringSecurity.model.User;
-import pre_project24.SpringSecurity.security.UsersDetailsImp;
 import pre_project24.SpringSecurity.service.UserDetailsServiceImpl;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/user")
-    public String getUserPage(Model model, @AuthenticationPrincipal UsersDetailsImp userDetails) {
+    public String getUserPage(Model model, @AuthenticationPrincipal User userDetails) {
         if (userDetails != null) {
             model.addAttribute("user", userDetails.getUser());
         }
