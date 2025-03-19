@@ -9,16 +9,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import pre_project24.SpringSecurity.model.User;
 import pre_project24.SpringSecurity.service.UserDetailsServiceImpl;
 
-import java.util.List;
 
 @Controller
 @RequestMapping("")
 public class UserController {
     private final UserDetailsServiceImpl userService;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Autowired
-    public UserController(UserDetailsServiceImpl userService) {
+    public UserController(UserDetailsServiceImpl userService, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.userService = userService;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
 
@@ -34,16 +35,16 @@ public class UserController {
 
     @GetMapping(value = "/user")
     public String getUserPage(Model model, @AuthenticationPrincipal User userDetails) {
-        if (userDetails != null) {
-            model.addAttribute("user", userDetails.getUser());
+        if (userDetails == null) {
+            return "redirect:/login";
         }
+       userDetailsServiceImpl.prepareUserPage(model, userDetails.getEmail());
         return "user";
     }
 
     @GetMapping("/users")
     public String getUsersList(Model model) {
-        List<User> users = userService.getAllUsers();
-        model.addAttribute("users", users);
+       userDetailsServiceImpl.usersListPage(model);
         return "admin";
     }
 

@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import pre_project24.SpringSecurity.model.Role;
 import pre_project24.SpringSecurity.repository.RoleRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 
 @Service
 public class RoleService {
@@ -18,5 +21,9 @@ public class RoleService {
 
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
+    }
+
+    public Set<Role> getRolesByIds(List<Long> roleIds) {
+        return new HashSet<>(roleRepository.findAllById(roleIds));
     }
 }

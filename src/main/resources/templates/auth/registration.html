@@ -1,22 +1,91 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .register-container {
+            width: 400px;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+
+        .btn-custom {
+            width: 100%;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-<h2>Sign Up</h2>
-<form action="/auth/registration" method="POST" th:object="${user}">
-    Name: <input type="text" th:field="*{username}" id="username"/>
-    <div style="color: darkorange" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"> Error</div>
-    <br>
-    Password: <input type="text" th:field="*{password}" id="password"/>
-    <div style="color: darkorange" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> Error</div>
-    <br>
-    <input type="submit" value="Sign Up">
-</form>
-</body>
-</head>
 
+<div class="register-container">
+    <h2>Create an Account</h2>
+    <form th:action="@{/auth/registration}" th:object="${user}" method="post">
+
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" th:field="*{firstName}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" th:field="*{lastName}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" th:field="*{age}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" th:field="*{password}" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="roles">Role:</label>
+            <select id="roles" th:field="*{roles}" multiple class="form-control">
+                <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.roleName}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg btn-custom">Register</button>
+
+        <div class="text-center mt-3">
+            <a href="/login">Already have an account? Login</a>
+        </div>
+    </form>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+</body>
 </html>

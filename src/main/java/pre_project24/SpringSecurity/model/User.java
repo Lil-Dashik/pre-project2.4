@@ -6,8 +6,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,13 +21,20 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
-    @Column(unique = true)
-    private String username;
+    private String firstName;
+    @Size(min = 2, max = 30, message = "Name should be between 2 and 30 characters")
+    private String lastName;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 3000, message = "Password should be between 2 and 30 characters")
     private String password;
+    @NotNull(message = "Age should not be empty")
+    @Min(value = 3, message = "Age should be greater than 3")
+    private Integer age;
+    @NotEmpty(message = "Email should not be empty")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
+    private String email;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -40,16 +46,24 @@ public class User implements UserDetails {
     public User() {
     }
 
-    public User(String username, String password, Set<Role> roles) {
-        this.username = username;
+    public User(String firstName, String lastName, String password, Integer age, String email, Set<Role> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.password = password;
+        this.age = age;
+        this.email = email;
         this.roles = roles;
     }
+
     public User(User user) {
-        this.username = user.getUsername();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
         this.password = user.getPassword();
+        this.age = user.getAge();
+        this.email = user.getEmail();
         this.roles = new HashSet<>(user.getRoles());
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
@@ -64,7 +78,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 
     @Override
@@ -86,7 +100,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    public User getUser(){
+
+    public User getUser() {
         return this;
     }
 }

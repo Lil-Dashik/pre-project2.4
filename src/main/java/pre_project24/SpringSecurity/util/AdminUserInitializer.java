@@ -27,10 +27,13 @@ public class AdminUserInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByUsername("admin_user").isEmpty()) {
+        if (userRepository.findByEmail("admin@admin.com").isEmpty()) {
             User admin = new User();
-            admin.setUsername("admin_user");
+            admin.setFirstName("admin_user");
+            admin.setLastName("Admin");
             admin.setPassword(passwordEncoder.encode("admin"));
+            admin.setAge(18);
+            admin.setEmail("admin@admin.com");
 
             Role adminRole = roleRepository.findByRole(RoleName.ROLE_ADMIN).orElseThrow();
             Role userRole = roleRepository.findByRole(RoleName.ROLE_USER).orElseThrow();

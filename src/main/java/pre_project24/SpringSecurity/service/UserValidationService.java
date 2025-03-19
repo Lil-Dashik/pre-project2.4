@@ -13,7 +13,7 @@ public class UserValidationService {
         this.userRepository = userRepository;
     }
 
-    public boolean isUserExists(String username) {
-        return userRepository.findByUsername(username).isPresent();
+    public boolean isUserExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 }

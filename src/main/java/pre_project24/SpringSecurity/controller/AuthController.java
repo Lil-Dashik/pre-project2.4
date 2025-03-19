@@ -2,6 +2,7 @@ package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pre_project24.SpringSecurity.model.User;
 import pre_project24.SpringSecurity.service.RegistrationService;
+import pre_project24.SpringSecurity.service.RoleService;
 import pre_project24.SpringSecurity.util.UserValidator;
 
 import javax.validation.Valid;
@@ -18,15 +20,18 @@ import javax.validation.Valid;
 public class AuthController {
     private final UserValidator userValidator;
     private final RegistrationService registrationService;
+    private final RoleService roleService;
 
     @Autowired
-    public AuthController(UserValidator userValidator, RegistrationService registrationService) {
+    public AuthController(UserValidator userValidator, RegistrationService registrationService, RoleService roleService) {
         this.userValidator = userValidator;
         this.registrationService = registrationService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/registration")
-    public String registrationPage(@ModelAttribute("user") User user) {
+    public String registrationPage(@ModelAttribute("user") User user, Model model) {
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "auth/registration";
     }
 
