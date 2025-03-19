@@ -1,7 +1,6 @@
 package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -45,24 +44,10 @@ public class AdminController {
         return adminService.addUser(user, roleIds, redirectAttributes);
     }
 
-
-    @GetMapping("/user/{id}")
-    public String getUserById(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
-        return adminService.getUserById(id, model, redirectAttributes);
-    }
-
     @PostMapping("/admin/updateRoles")
     public String updateUserRoles(@RequestParam Long userId,
                                   @RequestParam(required = false) List<Long> roleIds) {
         return adminService.updateUser(userId, roleIds);
-    }
-
-    @GetMapping("/admin/getUser/{id}")
-    @ResponseBody
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        return adminService.getUser(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(()->ResponseEntity.notFound().build());
     }
 
     @GetMapping("/admin/edit/{id}")
@@ -74,7 +59,7 @@ public class AdminController {
     public String editUser(@ModelAttribute("editUser") User editUser,
                            @RequestParam("roles") List<Long> roleIds,
                            RedirectAttributes redirectAttributes) {
-       return adminService.editUser(editUser, roleIds, redirectAttributes);
+        return adminService.editUser(editUser, roleIds, redirectAttributes);
     }
 
     @PostMapping("/admin/delete")

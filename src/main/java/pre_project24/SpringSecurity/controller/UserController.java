@@ -7,21 +7,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import pre_project24.SpringSecurity.model.User;
-import pre_project24.SpringSecurity.service.UserDetailsServiceImpl;
+import pre_project24.SpringSecurity.service.UserService;
 
 
 @Controller
 @RequestMapping("")
 public class UserController {
-    private final UserDetailsServiceImpl userService;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserDetailsServiceImpl userService, UserDetailsServiceImpl userDetailsServiceImpl) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
-    }
 
+    }
 
     @GetMapping(value = "/")
     public String getHomePage() {
@@ -38,13 +36,13 @@ public class UserController {
         if (userDetails == null) {
             return "redirect:/login";
         }
-       userDetailsServiceImpl.prepareUserPage(model, userDetails.getEmail());
+        userService.prepareUserPage(model, userDetails.getEmail());
         return "user";
     }
 
     @GetMapping("/users")
     public String getUsersList(Model model) {
-       userDetailsServiceImpl.usersListPage(model);
+        userService.usersListPage(model);
         return "admin";
     }
 

@@ -1,29 +1,27 @@
 package pre_project24.SpringSecurity.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pre_project24.SpringSecurity.model.User;
-import pre_project24.SpringSecurity.repository.UserRepository;
+
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class AdminService {
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
     private final RoleService roleService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public AdminService(UserDetailsServiceImpl userDetailsService, RoleService roleService, UserRepository userRepository) {
-        this.userDetailsService = userDetailsService;
+    public AdminService(UserService userService, RoleService roleService) {
+        this.userService = userService;
         this.roleService = roleService;
-        this.userRepository = userRepository;
     }
 
     public String getAdminPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
@@ -31,9 +29,9 @@ public class AdminService {
             return "redirect:/login";
         }
         model.addAttribute("page", "admin");
-        model.addAttribute("pageTittle", "Admin Panel");
+        model.addAttribute("pageTitle", "Admin Panel");
         model.addAttribute("user", userDetails);
-        model.addAttribute("users", userDetailsService.getAllUsers());
+        model.addAttribute("users", userService.getAllUsers());
         model.addAttribute("allRoles", roleService.getAllRoles());
         model.addAttribute("newUser", new User());
         model.addAttribute("editUser", new User());
@@ -48,7 +46,7 @@ public class AdminService {
 
     public String addUser(User user, List<Long> roleIds, RedirectAttributes redirectAttributes) {
         try {
-            userDetailsService.addUserWithRoles(user, roleIds);
+            userService.addUserWithRoles(user, roleIds);
             redirectAttributes.addFlashAttribute("success", "User added successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error adding user: " + e.getMessage());
@@ -57,7 +55,7 @@ public class AdminService {
     }
 
     public String getUserById(Long id, Model model, RedirectAttributes redirectAttributes) {
-        Optional<User> userOptional = userRepository.findById(id);
+        Optional<User> userOptional = userService.findById(id);
         if (userOptional.isEmpty()) {
             redirectAttributes.addFlashAttribute("error", "User with id " + id + " not found");
             return "redirect:/admin";
@@ -67,16 +65,16 @@ public class AdminService {
     }
 
     public String updateUser(Long id, List<Long> roleIds) {
-        userDetailsService.updateUserRoles(id, roleIds);
+        userService.updateUserRoles(id, roleIds);
         return "redirect:/admin";
     }
 
     public Optional<User> getUser(Long id) {
-        return userRepository.findById(id);
+        return userService.findById(id);
     }
 
     public String editUserForm(Long id, Model model) {
-        User user = userDetailsService.findById(id)
+        User user = userService.findById(id)
                 .orElseThrow(() -> new RuntimeException("User with id " + id + " not found"));
         model.addAttribute("editUser", user);
         model.addAttribute("allRoles", roleService.getAllRoles());
@@ -88,7 +86,7 @@ public class AdminService {
             redirectAttributes.addFlashAttribute("error", "ID not transmitted");
             return "redirect:/admin";
         }
-        User user = userDetailsService.findById(editUser.getId()).orElse(null);
+        User user = userService.findById(editUser.getId()).orElse(null);
         if (user == null) {
             redirectAttributes.addFlashAttribute("error", "User with id " + editUser.getId() + " not found");
             return "redirect:/admin";
@@ -101,14 +99,14 @@ public class AdminService {
             user.setPassword(editUser.getPassword());
         }
         user.setRoles(roleService.getRolesByIds(roleIds));
-        userDetailsService.updateUser(user);
+        userService.updateUser(user);
         redirectAttributes.addFlashAttribute("success", "User updated successfully");
         return "redirect:/admin";
     }
 
     public String deleteUser(Long id, RedirectAttributes redirectAttributes) {
         try {
-            userDetailsService.deleteUser(id);
+            userService.deleteUser(id);
             redirectAttributes.addFlashAttribute("success", "User deleted successfully");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error deleting user: " + e.getMessage());

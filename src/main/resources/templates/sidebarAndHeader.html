@@ -61,7 +61,8 @@
         <div class="sidebar bg-light p-3">
             <ul class="nav flex-column">
                 <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                    <a class="nav-link" th:classappend="${page == 'admin'} ? 'active bg-primary text-white'" href="/admin">Admin</a>
+                    <a class="nav-link" th:classappend="${page == 'admin'} ? 'active bg-primary text-white'"
+                       href="/admin">Admin</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:classappend="${page == 'user'} ? 'active bg-primary text-white'"
