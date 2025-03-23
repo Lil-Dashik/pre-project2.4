@@ -21,3 +21,8 @@ spring:
         id:
           new_generator_mappings: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE

@@ -1,12 +1,13 @@
 package pre_project24.SpringSecurity.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.*;
-import javax.validation.constraints.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -41,6 +42,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     public User() {
@@ -56,6 +58,7 @@ public class User implements UserDetails {
     }
 
     public User(User user) {
+        this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.password = user.getPassword();
@@ -99,9 +102,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public User getUser() {
-        return this;
     }
 }

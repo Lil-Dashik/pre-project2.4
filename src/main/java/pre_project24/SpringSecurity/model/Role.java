@@ -1,10 +1,11 @@
 package pre_project24.SpringSecurity.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ public class Role implements GrantedAuthority {
     @Enumerated(EnumType.STRING)
     private RoleName role;
     @ManyToMany(mappedBy = "roles")
+    @JsonBackReference
     private Set<User> users = new HashSet<>();
 
     public Role() {
@@ -27,10 +29,6 @@ public class Role implements GrantedAuthority {
     public Role(RoleName role, Set<User> users) {
         this.role = role;
         this.users = users;
-    }
-
-    public String getRoleName() {
-        return role.toString();
     }
 
     @Override

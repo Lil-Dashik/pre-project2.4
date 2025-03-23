@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            width: 350px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #343a40;
+        }
+        .btn {
+            width: 100%;
+            height: 45px;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h3>Please sign in</h3>
+    <div class="error-message" id="errorMessage">Invalid email or password</div>
+    <form id="loginForm">
+        <div class="mb-3">
+            <input type="email" class="form-control" id="email" name="username" placeholder="Email address" required>
+        </div>
+        <div class="mb-3">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function () {
+
+        $('#loginForm').submit(function (event) {
+            event.preventDefault();
+
+            const email = $('#email').val();
+            const password = $('#password').val();
+
+            $.ajax({
+                url: "/logout",
+                method: "POST",
+                complete: function () {
+                    loginRequest(email, password);
+                }
+            });
+        });
+
+        function loginRequest(email, password) {
+            $.ajax({
+                url: "/api/auth/login",
+                method: "POST",
+                contentType: "application/x-www-form-urlencoded",
+                data: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function () {
+
+                    $.ajax({
+                        url: "/api/user/info",
+                        method: "GET",
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        success: function () {
+                            window.location.href = "/dashboard.html";
+                        },
+                        error: function () {
+                            window.location.href = "/";
+                        }
+                    });
+                },
+                error: function () {
+                    $("#errorMessage").text("Invalid email or password").show();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

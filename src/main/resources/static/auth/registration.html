@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .register-container {
+            width: 300px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #343a40;
+        }
+
+        .btn-custom {
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h2>Create an Account</h2>
+    <form id="registerForm" method="POST">
+
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" class="form-control" required>
+        </div>
+
+        <p class="error-message" id="errorMessage"></p>
+
+        <button type="submit" class="btn btn-success">Register</button>
+
+        <div class="text-center mt-3">
+            <a href="/login">Already have an account? Login</a>
+        </div>
+    </form>
+</div>
+
+<div class="modal" id="successModal">
+    <p>Registration successful! Redirecting to login...</p>
+    <button id="closeModal">OK</button>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#registerForm").submit(function (event) {
+            event.preventDefault();
+
+            const formData = {
+                firstName: $("#firstName").val(),
+                lastName: $("#lastName").val(),
+                age: $("#age").val(),
+                email: $("#email").val(),
+                password: $("#password").val()
+            };
+
+            $.ajax({
+                url: "/api/auth/registration.html",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function () {
+
+                    loginUser(formData.email, formData.password);
+                },
+                error: function (xhr) {
+                    $("#errorMessage").text("Ошибка регистрации!").show();
+                }
+            });
+        });
+
+        function loginUser(email, password) {
+            $.ajax({
+                url: "/api/auth/login",
+                method: "POST",
+                contentType: "application/x-www-form-urlencoded",
+                data: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, // <- username, а не email
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function () {
+                    getUserRoleAndRedirect();
+                },
+                error: function () {
+                    $("#errorMessage").text("Регистрация прошла, но автоматический вход не выполнен. Войдите вручную.").show();
+                }
+            });
+        }
+
+        function getUserRoleAndRedirect() {
+            $.ajax({
+                url: "/api/user/info",
+                method: "GET",
+                success: function (user) {
+                    sessionStorage.setItem("userRole", JSON.stringify(user.roles));
+                    window.location.href = "/dashboard.html";
+                },
+                error: function () {
+                    window.location.href = "/login.html";
+                }
+            });
+        }
+
+        $("#closeModal").click(function () {
+            $("#successModal").fadeOut();
+        });
+    });
+</script>
+</body>
+</html>

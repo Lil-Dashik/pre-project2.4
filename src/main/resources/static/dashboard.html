@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .header {
+            width: 100%;
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        .sidebar {
+            width: 200px;
+            background: #f8f9fa;
+            padding-top: 20px;
+            border-right: 1px solid #ddd;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: calc(100vh - 60px);
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <span id="userInfo"></span>
+    <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
+</div>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a id="userPage" class="nav-link" href="#">User</a>
+            </li>
+            <li class="nav-item" id="adminMenuItem" style="display: none;">
+                <a id="adminPage" class="nav-link" href="#">Admin</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="content-container" id="mainContent"></div>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $("#mainContent").load("user.html");
+
+        $("#userPage").click(function (e) {
+            e.preventDefault();
+            $("#mainContent").load("user.html");
+        });
+
+        $("#adminPage").click(function (e) {
+            e.preventDefault();
+            $("#mainContent").load("adminPanel.html");
+        });
+
+        $.ajax({
+            url: "/api/user/info",
+            method: "GET",
+            dataType: "json",
+            success: function (user) {
+                let roles = user.roles.map(role => role.role).join(", ");
+                $("#userInfo").html(`<strong>${user.email}</strong> with roles: ${roles}`);
+
+                if (roles.includes("ROLE_ADMIN")) {
+                    $("#adminMenuItem").show();
+                }
+            },
+            error: function () {
+                window.location.href = "/login.html";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

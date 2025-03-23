@@ -1,70 +1,74 @@
 package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import pre_project24.SpringSecurity.model.Role;
 import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.repository.RoleRepository;
 import pre_project24.SpringSecurity.service.AdminService;
-
+import pre_project24.SpringSecurity.service.UserService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
-@Controller
-@RequestMapping("")
+@RestController
+@RequestMapping("/api/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private final AdminService adminService;
+    private final UserService userService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, UserService userService, RoleRepository roleRepository) {
         this.adminService = adminService;
+        this.userService = userService;
+        this.roleRepository = roleRepository;
     }
 
-    @GetMapping("/admin")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String adminPage(Model model, @AuthenticationPrincipal User userDetails) {
-        return adminService.getAdminPage(model, userDetails);
+    @GetMapping("/users")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/admin/addUser")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String showAddUserForm(Model model) {
-        return adminService.showAddUserForm(model);
+    @GetMapping("")
+    public ResponseEntity<User> adminPage(@AuthenticationPrincipal User userDetails) {
+        return ResponseEntity.ok(userDetails);
     }
 
-    @PostMapping("/admin/addUser")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String addUser(@ModelAttribute("user") User user,
-                          @RequestParam("roles") List<Long> roleIds,
-                          RedirectAttributes redirectAttributes) {
-        return adminService.addUser(user, roleIds, redirectAttributes);
+    @GetMapping("/users/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        Optional<User> user = adminService.getUserById(id);
+        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/admin/updateRoles")
-    public String updateUserRoles(@RequestParam Long userId,
-                                  @RequestParam(required = false) List<Long> roleIds) {
-        return adminService.updateUser(userId, roleIds);
+    @PostMapping("/addUser")
+    public ResponseEntity<User> addUser(@RequestBody Map<String, Object> data) {
+        User user = adminService.addUserFromMap(data);
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/admin/edit/{id}")
-    public String editUser(@PathVariable Long id, Model model) {
-        return adminService.editUserForm(id, model);
+    @PostMapping("/users/{id}/roles")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> data) {
+        return adminService.updateUserFromMap(id, data)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/admin/edit")
-    public String editUser(@ModelAttribute("editUser") User editUser,
-                           @RequestParam("roles") List<Long> roleIds,
-                           RedirectAttributes redirectAttributes) {
-        return adminService.editUser(editUser, roleIds, redirectAttributes);
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        boolean deleted = adminService.deleteUser(id);
+        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/admin/delete")
-    @PreAuthorize("hasRole('ADMIN')")
-    public String deleteUser(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
-        return adminService.deleteUser(id, redirectAttributes);
+    @GetMapping("/roles")
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
     }
 }

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Admin Panel</h2>
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link active" id="users-tab" data-toggle="tab" href="#users">Users Table</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="newUser-tab" data-toggle="tab" href="#newUser">Add New User</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="users">
+            <h4>All Users</h4>
+            <table class="table table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                </tr>
+                </thead>
+                <tbody id="usersTableBody">
+
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="tab-pane fade" id="newUser">
+            <div id="addUserContainer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editAndDeleteContainer"></div>
+
+<script src="js/editAndDeleteUser.js"></script>
+<script src="js/adminPanel.js"></script>
+<script src="js/addUser.js"></script>
+
+</body>
+</html>

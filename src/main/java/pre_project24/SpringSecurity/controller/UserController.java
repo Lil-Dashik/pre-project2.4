@@ -1,17 +1,20 @@
 package pre_project24.SpringSecurity.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pre_project24.SpringSecurity.model.User;
 import pre_project24.SpringSecurity.service.UserService;
 
+import java.security.Principal;
+import java.util.List;
 
-@Controller
-@RequestMapping("")
+
+@RestController
+@RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
 
@@ -21,30 +24,19 @@ public class UserController {
 
     }
 
-    @GetMapping(value = "/")
-    public String getHomePage() {
-        return "index";
-    }
-
-    @GetMapping(value = "/login")
-    public String getLoginPage() {
-        return "login";
-    }
-
-    @GetMapping(value = "/user")
-    public String getUserPage(Model model, @AuthenticationPrincipal User userDetails) {
-        if (userDetails == null) {
-            return "redirect:/login";
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
         }
-        userService.prepareUserPage(model, userDetails.getEmail());
-        return "user";
+        User fullUser = userService.findByEmail(principal.getName());
+        return ResponseEntity.ok(fullUser);
     }
 
-    @GetMapping("/users")
-    public String getUsersList(Model model) {
-        userService.usersListPage(model);
-        return "admin";
+    @GetMapping("/all")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
-
-
 }
+
