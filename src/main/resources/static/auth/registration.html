@@ -93,9 +93,6 @@
 
         <button type="submit" class="btn btn-success">Register</button>
 
-        <div class="text-center mt-3">
-            <a href="/login">Already have an account? Login</a>
-        </div>
     </form>
 </div>
 
@@ -119,54 +116,17 @@
             };
 
             $.ajax({
-                url: "/api/auth/registration.html",
+                url: "/api/auth/registration.html",  // Путь для регистрации
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(formData),
                 success: function () {
-
-                    loginUser(formData.email, formData.password);
+                    window.location.href = "/login";  // После успешной регистрации перенаправляем на страницу логина
                 },
                 error: function (xhr) {
                     $("#errorMessage").text("Ошибка регистрации!").show();
                 }
             });
-        });
-
-        function loginUser(email, password) {
-            $.ajax({
-                url: "/api/auth/login",
-                method: "POST",
-                contentType: "application/x-www-form-urlencoded",
-                data: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, // <- username, а не email
-                xhrFields: {
-                    withCredentials: true
-                },
-                success: function () {
-                    getUserRoleAndRedirect();
-                },
-                error: function () {
-                    $("#errorMessage").text("Регистрация прошла, но автоматический вход не выполнен. Войдите вручную.").show();
-                }
-            });
-        }
-
-        function getUserRoleAndRedirect() {
-            $.ajax({
-                url: "/api/user/info",
-                method: "GET",
-                success: function (user) {
-                    sessionStorage.setItem("userRole", JSON.stringify(user.roles));
-                    window.location.href = "/dashboard.html";
-                },
-                error: function () {
-                    window.location.href = "/login.html";
-                }
-            });
-        }
-
-        $("#closeModal").click(function () {
-            $("#successModal").fadeOut();
         });
     });
 </script>

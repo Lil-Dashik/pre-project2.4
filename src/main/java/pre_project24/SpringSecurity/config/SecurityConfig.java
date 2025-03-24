@@ -20,38 +20,34 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final SuccessUserHandler successUserHandler;
+private final UserDetailsService userDetailsService;
+@Autowired
+public SecurityConfig(UserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
 
-    @Autowired
-    public SecurityConfig(SuccessUserHandler successUserHandler) {
-        this.successUserHandler = successUserHandler;
-    }
+}
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.disable())  // Отключаем CSRF для упрощения (если необходимо)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/index.html","/api/auth/**", "/auth/registration.html", "/login.html", "/", "/static/**").permitAll()
-                        .requestMatchers("/dashboard.html").authenticated()
-                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .requestMatchers("/", "/index.html", "/static/**", "/auth/registration.html", "/api/auth/registration.html", "/login").permitAll()  // Разрешаем доступ к публичным страницам
+                        .requestMatchers("/dashboard").authenticated()  // Доступ к /dashboard только авторизованным
+                        .anyRequest().authenticated()  // Все остальные запросы требуют аутентификацию
                 )
                 .formLogin(form -> form
-                        .loginPage("/login.html")
-                        .loginProcessingUrl("/api/auth/login")
-                        .successHandler(successUserHandler)
-                        .permitAll()
+                        .defaultSuccessUrl("/dashboard", true)  // После успешного логина перенаправление на /dashboard
+                        .permitAll()  // Разрешаем доступ к странице логина
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login.html")
+                        .logoutUrl("/logout")  // URL для выхода
+                        .logoutSuccessUrl("/login")  // После выхода перенаправление на страницу логина
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .permitAll()
                 );
+
         return http.build();
     }
 
