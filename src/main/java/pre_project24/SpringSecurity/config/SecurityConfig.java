@@ -22,7 +22,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/index.html", "/static/**", "/auth/registration.html", "/api/auth/registration.html", "/login").permitAll()  // Разрешаем доступ к публичным страницам
+                        .requestMatchers("/", "/index.html", "/static/**", "/auth/registration.html", "/api/auth/registration.html", "/login").permitAll() 
                         .requestMatchers("/dashboard").authenticated()
                         .anyRequest().authenticated()
                 )
