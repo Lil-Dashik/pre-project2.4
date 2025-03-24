@@ -116,12 +116,12 @@
             };
 
             $.ajax({
-                url: "/api/auth/registration.html",  // Путь для регистрации
+                url: "/api/auth/registration.html",
                 method: "POST",
                 contentType: "application/json",
                 data: JSON.stringify(formData),
                 success: function () {
-                    window.location.href = "/login";  // После успешной регистрации перенаправляем на страницу логина
+                    window.location.href = "/login";
                 },
                 error: function (xhr) {
                     $("#errorMessage").text("Ошибка регистрации!").show();
