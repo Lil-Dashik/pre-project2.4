@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pre_project24.SpringSecurity.model.*;
@@ -21,19 +20,15 @@ public class AuthController {
     private final UserValidator userValidator;
     private final RegistrationService registrationService;
     private final RoleService roleService;
-//    private final AuthenticationManager authenticationManager;
 
 
     @Autowired
     public AuthController(UserValidator userValidator,
                           RegistrationService registrationService,
-                          RoleService roleService,
-                          AuthenticationManager authenticationManager) {
+                          RoleService roleService) {
         this.userValidator = userValidator;
         this.registrationService = registrationService;
         this.roleService = roleService;
-//        this.authenticationManager = authenticationManager;
-
     }
 
     @GetMapping("/roles")
@@ -54,8 +49,6 @@ public class AuthController {
         }
         Optional<User> registeredUser = registrationService.registerUser(userDTO);
         if (registeredUser.isPresent()) {
-
-//            User user = registeredUser.get();
             return "redirect:/login";
         } else {
             System.out.println("ERROR");
