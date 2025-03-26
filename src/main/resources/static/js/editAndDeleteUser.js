@@ -6,7 +6,17 @@ $(document).ready(function () {
         const lastName = $(this).data('lastname');
         const age = $(this).data('age');
         const email = $(this).data('email');
-        const roles = $(this).data('roles').split(',').map(r => r.trim());
+        let roleIds = $(this).data('roleids');
+
+        if (typeof roleIds === 'string') {
+            roleIds = roleIds.split(',').map(r => parseInt(r.trim()));
+        } else if (typeof roleIds === 'number') {
+            roleIds = [roleIds];
+        } else {
+            roleIds = [];
+        }
+
+        console.log("Role IDs:", roleIds);
 
         $('#editUserId').val(userId);
         $('#editFirstName').val(firstName);
@@ -15,15 +25,17 @@ $(document).ready(function () {
         $('#editEmail').val(email);
         $('#editPassword').val("");
 
+
         $.ajax({
             url: "/api/admin/roles",
             method: "GET",
-            success: function (allRoles) {
+            success: function (roles) {
                 const $roleSelect = $('#editRoles');
                 $roleSelect.empty();
 
-                allRoles.forEach(role => {
-                    const isSelected = roles.includes(role.role);
+
+                roles.forEach(role => {
+                    const isSelected = roleIds.includes(role.id);
                     const option = `<option value="${role.id}" ${isSelected ? 'selected' : ''}>${role.role}</option>`;
                     $roleSelect.append(option);
                 });
@@ -42,14 +54,19 @@ $(document).ready(function () {
         const userId = $('#editUserId').val();
         const selectedRoles = $('#editRoles').val().map(Number);
 
+
         const userData = {
+            id: userId,
             firstName: $('#editFirstName').val(),
             lastName: $('#editLastName').val(),
             age: parseInt($('#editAge').val()),
             email: $('#editEmail').val(),
             password: $('#editPassword').val(),
-            roles: selectedRoles
+            roleIds: selectedRoles
         };
+
+        console.log("Sending user data:", JSON.stringify(userData));
+
 
         $.ajax({
             url: `/api/admin/users/${userId}/roles`,
@@ -72,16 +89,39 @@ $(document).ready(function () {
         const lastName = $(this).data('lastname');
         const age = $(this).data('age');
         const email = $(this).data('email');
-        const roles = $(this).data('roles');
+        let roleIds = $(this).data('roleids');
+        if (typeof roleIds === 'string') {
+            roleIds = roleIds.split(',').map(r => parseInt(r.trim()));
+        } else if (typeof roleIds === 'number') {
+            roleIds = [roleIds];
+        } else {
+            roleIds = [];
+        }
+
+        console.log("Role IDs:", roleIds);
+        $.ajax({
+            url: "/api/admin/roles",
+            method: "GET",
+            success: function (roles) {
+                const roleNames = roles.filter(role => roleIds.includes(role.id))
+                    .map(role => role.role)
+                    .join(", ");
+
+                console.log("Role Names:", roleNames);
 
         $('#deleteUserId').val(userId);
         $('#deleteFirstName').val(firstName);
         $('#deleteLastName').val(lastName);
         $('#deleteAge').val(age);
         $('#deleteEmail').val(email);
-        $('#deleteRoles').val(roles);
+        $('#deleteRoles').val(roleNames);
 
         $('#deleteUserModal').modal('show');
+            },
+            error: function () {
+                alert("Ошибка загрузки ролей.");
+            }
+        });
     });
 
     $(document).on('submit', '#deleteUserForm', function (e) {
@@ -101,5 +141,4 @@ $(document).ready(function () {
             }
         });
     });
-
 });

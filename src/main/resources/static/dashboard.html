@@ -73,11 +73,15 @@
             url: "/api/user/info",
             method: "GET",
             dataType: "json",
-            success: function (user) {
-                let roles = user.roles.map(role => role.role).join(", ");
-                $("#userInfo").html(`<strong>${user.email}</strong> with roles: ${roles}`);
+            success: function (userDTO) {
+                const roleNames = {
+                    1: 'ROLE_USER',
+                    2: 'ROLE_ADMIN',
+                };
+                let roleIds = userDTO.roleIds.map(roleId =>  roleNames[roleId]).join(", ");
+                $("#userInfo").html(`<strong>${userDTO.email}</strong> with roles: ${roleIds}`);
 
-                if (roles.includes("ROLE_ADMIN")) {
+                if (roleIds.includes("ROLE_ADMIN")) {
                     $("#adminMenuItem").show();
                 }
             },
@@ -87,6 +91,7 @@
         });
     });
 </script>
+
 
 </body>
 </html>

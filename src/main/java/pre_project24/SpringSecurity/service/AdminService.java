@@ -4,97 +4,94 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pre_project24.SpringSecurity.model.Role;
 import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.model.UserDTO;
+import pre_project24.SpringSecurity.repository.RoleRepository;
 import pre_project24.SpringSecurity.repository.UserRepository;
 
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
-    private final UserService userService;
-    private final RoleService roleService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+    private final RoleRepository roleRepository;
 
 
     @Autowired
-    public AdminService(UserService userService, RoleService roleService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
-        this.roleService = roleService;
+    public AdminService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                        UserMapper userMapper, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
+        this.roleRepository = roleRepository;
 
     }
 
-    public Optional<User> getUserById(Long id) {
-        return userService.findById(id);
+    public UserDTO getUserById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toUserDTO(user);
     }
 
-    public User addUser(User user, List<Long> roleIds) {
-        Set<Role> roles = new HashSet<>(roleService.getRolesByIds(roleIds));
-        user.setRoles(roles);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+    public List<UserDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(userMapper::toUserDTO)
+                .collect(Collectors.toList());
     }
 
+    public UserDTO addUser(UserDTO userDTO) {
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            userDTO.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+        }
+        User user = userMapper.fromUserDTO(userDTO);
+        if (userDTO.getRoleIds() != null && !userDTO.getRoleIds().isEmpty()) {
+            updateUserRoles(user, userDTO.getRoleIds());
+        }
+        user = userRepository.save(user);
+        return userMapper.toUserDTO(user);
+    }
 
-    public Optional<User> updateUser(Long id, User userDetails, List<Long> roleIds) {
+    @Transactional
+    public Optional<UserDTO> updateUser(Long id, UserDTO userDTO) {
         return userRepository.findById(id).map(user -> {
-            user.setFirstName(userDetails.getFirstName());
-            user.setLastName(userDetails.getLastName());
-            user.setAge(userDetails.getAge());
-            user.setEmail(userDetails.getEmail());
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
+            user.setAge(userDTO.getAge());
+            user.setEmail(userDTO.getEmail());
 
-            if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+            if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
             }
 
-            if (roleIds != null && !roleIds.isEmpty()) {
-                Set<Role> updatedRoles = new HashSet<>(roleService.getRolesByIds(roleIds));
-                user.setRoles(updatedRoles);
+            if (userDTO.getRoleIds() != null && !userDTO.getRoleIds().isEmpty()) {
+                updateUserRoles(user, userDTO.getRoleIds());
             }
 
-            return userRepository.save(user);
+            userRepository.save(user);
+
+            return userMapper.toUserDTO(user);
         });
     }
 
-    public User addUserFromMap(Map<String, Object> data) {
-        User user = buildUserFromMap(data);
-        List<Long> roleIds = extractRoleIds(data);
-        return addUser(user, roleIds);
-    }
-
-    public Optional<User> updateUserFromMap(Long id, Map<String, Object> data) {
-        User userDetails = buildUserFromMap(data);
-        List<Long> roleIds = extractRoleIds(data);
-        return updateUser(id, userDetails, roleIds);
-    }
-
-    private User buildUserFromMap(Map<String, Object> data) {
-        User user = new User();
-        user.setFirstName((String) data.get("firstName"));
-        user.setLastName((String) data.get("lastName"));
-        user.setEmail((String) data.get("email"));
-        user.setPassword((String) data.get("password"));
-        Object ageObj = data.get("age");
-        if (ageObj instanceof Integer age) {
-            user.setAge(age);
-        } else if (ageObj instanceof String strAge) {
-            user.setAge(Integer.parseInt(strAge));
+    public void updateUserRoles(User user, List<Long> newRoleIds) {
+        user.getRoles().clear();
+        Set<Role> updatedRoles = new HashSet<>();
+        for (Long roleId : newRoleIds) {
+            Optional<Role> roleOpt = roleRepository.findById(roleId);
+            if (roleOpt.isPresent()) {
+                updatedRoles.add(roleOpt.get());
+            } else {
+                throw new RuntimeException("Роль с id " + roleId + " не найдена.");
+            }
         }
-        return user;
+        user.setRoles(updatedRoles);
     }
-
-    private List<Long> extractRoleIds(Map<String, Object> data) {
-        List<?> raw = (List<?>) data.getOrDefault("roles", List.of());
-        return raw.stream()
-                .map(Object::toString)
-                .map(Long::parseLong)
-                .toList();
-    }
-
 
     public boolean deleteUser(Long id) {
         if (userRepository.existsById(id)) {

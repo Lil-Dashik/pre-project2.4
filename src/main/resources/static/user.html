@@ -39,15 +39,19 @@
             url: "/api/user/info",
             method: "GET",
             dataType: "json",
-            success: function (user) {
-                let roles = user.roles.map(role => role.role).join(", ");
+            success: function (userDTO) {
+                const roleNames = {
+                    1: 'ROLE_USER',
+                    2: 'ROLE_ADMIN',
+                };
+                let roleIds = userDTO.roleIds.map(roleId => roleNames[roleId]).join(", ");
                 let userRow = `<tr>
-                        <td>${user.id ?? 'N/A'}</td>
-                        <td>${user.firstName}</td>
-                        <td>${user.lastName}</td>
-                        <td>${user.age}</td>
-                        <td>${user.email}</td>
-                        <td>${roles}</td>
+                        <td>${userDTO.id ?? 'N/A'}</td>
+                        <td>${userDTO.firstName}</td>
+                        <td>${userDTO.lastName}</td>
+                        <td>${userDTO.age}</td>
+                        <td>${userDTO.email}</td>
+                        <td>${roleIds}</td>
                    </tr>`;
                 $("#userInfoTable").html(userRow);
             }

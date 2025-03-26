@@ -7,45 +7,55 @@ $(document).ready(function () {
             dataType: "json",
             success: function (users) {
                 let tableBody = "";
-                users.forEach(user => {
-                    const roles = user.roles.map(r => r.role).join(", ");
+                users.forEach(userDTO => {
+                    const roleIds = userDTO.roleIds || [];
 
-                    tableBody += `
+                    $.ajax({
+                        url: "/api/admin/roles",
+                        method: "GET",
+                        success: function (roles) {
+                            const roleNames = roles
+                                .filter(role => roleIds.includes(role.id))
+                                .map(role => role.role)
+                                .join(", ");
+                            tableBody += `
                     <tr>
-                        <td>${user.id}</td>
-                        <td>${user.firstName}</td>
-                        <td>${user.lastName}</td>
-                        <td>${user.age}</td>
-                        <td>${user.email}</td>
-                        <td>${roles}</td>
+                        <td>${userDTO.id}</td>
+                        <td>${userDTO.firstName}</td>
+                        <td>${userDTO.lastName}</td>
+                        <td>${userDTO.age}</td>
+                        <td>${userDTO.email}</td>
+                        <td>${roleNames || 'No roles'}</td>  
                         <td>
                             <button class="btn btn-info btn-sm editUserBtn"
-                                    data-id="${user.id}"
-                                    data-firstname="${user.firstName}"
-                                    data-lastname="${user.lastName}"
-                                    data-age="${user.age}"
-                                    data-email="${user.email}"
-                                    data-roles="${roles}">
+                                    data-id="${userDTO.id}"
+                                    data-firstname="${userDTO.firstName}"
+                                    data-lastname="${userDTO.lastName}"
+                                    data-age="${userDTO.age}"
+                                    data-email="${userDTO.email}"
+                                    data-roleids="${roleIds.join(',')}">
                                 Edit
                             </button>
                         </td>
                         <td>
-                           <button class="btn btn-danger btn-sm deleteUserBtn"
-                                    data-id="${user.id}"
-                                    data-firstname="${user.firstName}"
-                                    data-lastname="${user.lastName}"
-                                    data-age="${user.age}"
-                                    data-email="${user.email}"
-                                    data-roles="${roles}">
+                            <button class="btn btn-danger btn-sm deleteUserBtn"
+                                    data-id="${userDTO.id}"
+                                    data-firstname="${userDTO.firstName}"
+                                    data-lastname="${userDTO.lastName}"
+                                    data-age="${userDTO.age}"
+                                    data-email="${userDTO.email}"
+                                    data-roleids="${roleIds.join(',')}">
                                 Delete
                             </button>
                         </td>
                     </tr>`;
+                            $("#usersTableBody").html(tableBody);
+                        },
+                        error: function () {
+                            alert("Ошибка загрузки ролей.");
+                        }
+                    });
                 });
-                $("#usersTableBody").html(tableBody);
-            },
-            error: function () {
-                alert("Ошибка загрузки пользователей.");
             }
         });
     }
@@ -59,36 +69,39 @@ $(document).ready(function () {
                 url: "/api/admin/roles",
                 method: "GET",
                 success: function (roles) {
-                    const $rolesSelect = $("#roles");
-                    let options = roles.map(role =>
-                        `<option value="${role.id}">${role.role}</option>`
-                    );
-                    $rolesSelect.html(options.join(""));
+                    const $roleSelect = $('#roles');
+                    $roleSelect.empty();
+
+                    roles.forEach(role => {
+                        const option = `<option value="${role.id}">${role.role}</option>`;
+                        $roleSelect.append(option);
+                    });
                 },
                 error: function () {
-                    alert("Ошибка загрузки ролей.");
+                    alert("Ошибка загрузки ролей для редактирования.");
                 }
             });
 
             $("#addUserForm").submit(function (e) {
                 e.preventDefault();
 
-                let user = {
+                let userDTO = {
                     firstName: $("#firstName").val(),
                     lastName: $("#lastName").val(),
                     age: parseInt($("#age").val()),
                     email: $("#email").val(),
                     password: $("#password").val(),
-                    roles: $("#roles").val().map(Number)
+                    roleIds: $("#roles").val().map(Number)
                 };
+                console.log("Sending user data:", JSON.stringify(userDTO));
 
                 $.ajax({
                     url: "/api/admin/addUser",
                     method: "POST",
                     contentType: "application/json",
-                    data: JSON.stringify(user),
+                    data: JSON.stringify(userDTO),
                     success: function () {
-                        alert("User added successfully!");
+                        alert("Пользователь успешно добавлен!");
                         $("#users-tab").click();
                         window.refreshUsers();
                     },

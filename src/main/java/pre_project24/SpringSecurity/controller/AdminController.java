@@ -1,19 +1,20 @@
 package pre_project24.SpringSecurity.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import pre_project24.SpringSecurity.model.Role;
+import pre_project24.SpringSecurity.model.RoleDTO;
 import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.model.UserDTO;
 import pre_project24.SpringSecurity.repository.RoleRepository;
 import pre_project24.SpringSecurity.service.AdminService;
-import pre_project24.SpringSecurity.service.UserService;
+import pre_project24.SpringSecurity.service.UserMapper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -21,42 +22,48 @@ import java.util.Optional;
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private final AdminService adminService;
-    private final UserService userService;
     private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
+
 
     @Autowired
-    public AdminController(AdminService adminService, UserService userService, RoleRepository roleRepository) {
+    public AdminController(AdminService adminService, RoleRepository roleRepository, UserMapper userMapper) {
         this.adminService = adminService;
-        this.userService = userService;
         this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        List<UserDTO> userDTOs = adminService.getAllUsers();
+        return ResponseEntity.ok(userDTOs);
     }
 
     @GetMapping("")
-    public ResponseEntity<User> adminPage(@AuthenticationPrincipal User userDetails) {
-        return ResponseEntity.ok(userDetails);
+    public ResponseEntity<UserDTO> adminPage(@AuthenticationPrincipal User userDetails) {
+        UserDTO userDTO = userMapper.toUserDTO(userDetails);
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = adminService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        try {
+            UserDTO userDTO = adminService.getUserById(id);
+            return ResponseEntity.ok(userDTO);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<User> addUser(@RequestBody Map<String, Object> data) {
-        User user = adminService.addUserFromMap(data);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserDTO> addUser(@RequestBody @Valid UserDTO userDTO) {
+        UserDTO createdUser = adminService.addUser(userDTO);
+        return ResponseEntity.ok(createdUser);
     }
 
     @PostMapping("/users/{id}/roles")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody Map<String, Object> data) {
-        return adminService.updateUserFromMap(id, data)
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        return adminService.updateUser(id, userDTO)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -68,7 +75,11 @@ public class AdminController {
     }
 
     @GetMapping("/roles")
-    public List<Role> getRoles() {
-        return roleRepository.findAll();
+    public ResponseEntity<List<RoleDTO>> getAllRoles() {
+        List<RoleDTO> roles = roleRepository.findAll()
+                .stream()
+                .map(role -> new RoleDTO(role.getId(), role.getRole().name()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(roles);
     }
 }

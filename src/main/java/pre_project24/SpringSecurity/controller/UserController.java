@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pre_project24.SpringSecurity.model.User;
+import pre_project24.SpringSecurity.model.UserDTO;
 import pre_project24.SpringSecurity.service.UserService;
 
 import java.security.Principal;
@@ -21,7 +21,6 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
-
     }
 
     @GetMapping("/info")
@@ -29,14 +28,14 @@ public class UserController {
         if (principal == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authenticated");
         }
-        User fullUser = userService.findByEmail(principal.getName());
-        return ResponseEntity.ok(fullUser);
+        UserDTO userDTO = userService.findByEmailDTO(principal.getName());
+        return ResponseEntity.ok(userDTO);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserDTO>> getAllUsersDTO() {
+        List<UserDTO> userDTOs = userService.getAllUsersDTO();
+        return ResponseEntity.ok(userDTOs);
     }
 }
 
