@@ -41,8 +41,8 @@
             dataType: "json",
             success: function (userDTO) {
                 const roleNames = {
-                    1: 'ROLE_USER',
-                    2: 'ROLE_ADMIN',
+                    1: 'ROLE_ADMIN',
+                    2: 'ROLE_USER',
                 };
                 let roleIds = userDTO.roleIds.map(roleId => roleNames[roleId]).join(", ");
                 let userRow = `<tr>

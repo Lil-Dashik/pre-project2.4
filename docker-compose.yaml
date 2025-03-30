@@ -16,10 +16,10 @@ services:
       - .env
 
   app:
-    image: lildashik/pre-project5
+    image: lildashik/pre-project5.2
     container_name: pre-project24-app
     ports:
-      - "8081:8080"
+      - "8082:8080"
     depends_on:
       - db
     networks:

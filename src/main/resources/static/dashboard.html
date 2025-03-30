@@ -74,11 +74,13 @@
             method: "GET",
             dataType: "json",
             success: function (userDTO) {
+                console.log("User data:", userDTO);
                 const roleNames = {
-                    1: 'ROLE_USER',
-                    2: 'ROLE_ADMIN',
+                    1: 'ROLE_ADMIN',
+                    2: 'ROLE_USER',
                 };
-                let roleIds = userDTO.roleIds.map(roleId =>  roleNames[roleId]).join(", ");
+                let roleIds = userDTO.roleIds.map(roleId => roleNames[roleId]).join(", ");
+                console.log("Role IDs:", roleIds);
                 $("#userInfo").html(`<strong>${userDTO.email}</strong> with roles: ${roleIds}`);
 
                 if (roleIds.includes("ROLE_ADMIN")) {

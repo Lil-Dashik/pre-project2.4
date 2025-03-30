@@ -26,4 +26,7 @@ public class RoleService {
     public Set<Role> getRolesByIds(List<Long> roleIds) {
         return new HashSet<>(roleRepository.findAllById(roleIds));
     }
+public Role getRoleById(Long roleId) {
+        return roleRepository.findById(roleId).orElseThrow(()-> new RuntimeException("Role not found"));
+}
 }
