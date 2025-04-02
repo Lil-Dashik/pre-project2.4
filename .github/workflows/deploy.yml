@@ -21,6 +21,9 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: List files in target folder
+        run: ls -la target/
+
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
