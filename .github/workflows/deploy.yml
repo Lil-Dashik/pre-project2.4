@@ -40,12 +40,22 @@ jobs:
             docker pull $DOCKER_USER/$DOCKER_IMAGE:latest || exit 1
             docker images $DOCKER_USER/$DOCKER_IMAGE:latest
 
-      - name: Remove old docker-compose.yaml from remote server
+      - name: Remove old docker-compose.yaml and stop containers if running
         run: |
-          ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $REMOTE_SERVER "
-            sudo rm -f /home/dasha/docker-compose.yaml
-            sudo docker-compose down
-            "
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $REMOTE_SERVER "
+            if [ -f /home/dasha/docker-compose.yaml ]; then
+              echo 'Removing old docker-compose.yaml'
+              sudo rm -f /home/dasha/docker-compose.yaml
+            else
+              echo 'docker-compose.yaml does not exist, skipping removal'
+            fi
+            if sudo docker-compose -f /home/dasha/docker-compose.yaml ps | grep -q 'Up'; then
+              echo 'Stopping running containers'
+              sudo docker-compose -f /home/dasha/docker-compose.yaml down
+            else
+              echo 'No running containers to stop'
+            fi
+          "
 
       - name: Copy new docker-compose.yaml to remote server
         run: |
