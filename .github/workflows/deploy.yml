@@ -1,6 +1,6 @@
 name: Automatically update the app
 on:
-  pull_request:
+  push:
     branches: [ master, main ]
 jobs:
   deploy:
