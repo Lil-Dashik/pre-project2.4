@@ -43,7 +43,9 @@ jobs:
       - name: Remove old docker-compose.yaml from remote server
         run: |
           ssh -v -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $REMOTE_SERVER "
-            sudo rm -f /home/dasha/docker-compose.yaml"
+            sudo rm -f /home/dasha/docker-compose.yaml
+            sudo docker-compose down
+            "
 
       - name: Copy new docker-compose.yaml to remote server
         run: |
@@ -60,7 +62,7 @@ jobs:
       - name: Deploy new container
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $REMOTE_SERVER "
-            cd /home/dasha && sudo docker-compose down 
+            cd /home/dasha 
             sudo docker-compose up -d
             sudo rm -f .env
             "
