@@ -55,6 +55,9 @@ jobs:
             else
               echo 'No running containers to stop'
             fi
+             echo 'Removing Docker image lildashik/pre-project5.4'
+              sudo docker rmi -f lildashik/pre-project5.4 || 
+              echo 'Image removal failed, image might not be in use'
           "
 
       - name: Copy new docker-compose.yaml to remote server
