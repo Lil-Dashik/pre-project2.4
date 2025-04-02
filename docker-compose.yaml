@@ -16,7 +16,7 @@ services:
       - .env
 
   app:
-    image: lildashik/pre-project5.2
+    image: lildashik/pre-project5.4
     container_name: pre-project24-app
     ports:
       - "8082:8080"
