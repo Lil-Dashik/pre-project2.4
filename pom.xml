@@ -105,10 +105,6 @@
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -166,19 +162,6 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<version>3.2.0</version>
-			</plugin>
-			<plugin>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-maven-plugin</artifactId>
-				<version>4.24.0</version>
-				<configuration>
-					<changeLogFile>src/main/resources/db/changelog.xml</changeLogFile>
-					<changeLogFile>src/main/resources/db/changelogUpdate.xml</changeLogFile>
-					<url>${liquibase.url}</url>
-					<username>${liquibase.username}</username>
-					<password>${liquibase.password}</password>
-					<driver>${liquibase.driver}</driver>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
